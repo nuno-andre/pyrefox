@@ -1,0 +1,24 @@
+permissions:
+  createEvents: |-
+    create table events (
+      id integer primary key,
+      type integer not null,
+      count integer not null,
+      timestamp date
+    );
+  addEvent: |-
+    insert into events (type, count, timestamp) values (:type, 1, date(:date));
+  incrementEvent: |-
+    update events set count = count + 1 where id = :id;
+  selectByTypeAndDate: |-
+    select * from events where type = :type and timestamp = date(:date);
+  deleteEventsRecords: |-
+    delete from events;
+  removeRecordsSince: |-
+    delete from events where timestamp >= date(:date);
+  selectByDateRange: |-
+    select * from events where timestamp between date(:dateFrom) and date(:dateTo);
+  sumAllEvents: |-
+    select sum(count) from events;
+  getEarliestDate: |-
+    select timestamp from events order by timestamp asc limit 1;
