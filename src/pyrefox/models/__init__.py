@@ -1,4 +1,5 @@
 from typing import Union
+from http.cookies import SimpleCookie
 
 from ..types import (
     DynamicModel, Model, Object,
@@ -59,6 +60,18 @@ class Cookie(Model):
     same_site:          SameSite
     raw_same_site:      SameSite
     scheme_map:         int
+
+    @property
+    def header(self) -> SimpleCookie:
+        cookie = SimpleCookie()
+        cookie[self.name] = self.value
+        cookie[self.name]['expires'] = self.expiry
+        cookie[self.name]['path'] = self.path
+        cookie[self.name]['domain'] = self.host
+        cookie[self.name]['secure'] = self.is_secure
+        cookie[self.name]['httponly'] = self.is_http_only
+        cookie[self.name]['samesite'] = self.same_site.name.capitalize()
+        return cookie
 
 
 __all__ = [
