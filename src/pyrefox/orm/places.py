@@ -78,7 +78,8 @@ class BookmarkOrm(PlacesBase):
 
     id                = Column(Integer, primary_key=True)
     type              = Column(Integer)
-    fk                = Column(Integer, server_default=text('NULL'))
+    # fk                = Column(Integer, server_default=text('NULL'))
+    fk                = Column(ForeignKey('moz_places.id'), index=True)
     parent            = Column(Integer, nullable=False)
     position          = Column(Integer)
     title             = Column(Text)
@@ -91,6 +92,7 @@ class BookmarkOrm(PlacesBase):
     syncChangeCounter = Column(Integer, nullable=False, server_default=text('1'))
 
     keyword = relationship('KeywordOrm')
+    place = relationship('PlaceOrm')
 
 
 class BookmarkDeletedOrm(PlacesBase):

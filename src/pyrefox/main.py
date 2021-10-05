@@ -1,7 +1,9 @@
 from typing import Iterator
+from contextvars import Context, ContextVar
+from os import PathLike, getenv
 from platform import system
 from pathlib import Path
-from os import PathLike, getenv
+import json
 
 from .orm import (
     Cookies,
@@ -27,10 +29,21 @@ from .models import (
 from .types import datetime
 
 
+# user_prefs helpers
+false = False
+true = True
+
+
+def user_pref(key, value):
+    var = ContextVar(key)
+    var.set(value)
+
+
 class Profile:
 
     def __init__(self, path: PathLike) -> None:
         self.path = Path(path)
+        self.ctx = Context()
         self.places_db = Places(self.path)
         self.cookies_db = Cookies(self.path)
         self.form_history = FormHistory(self.path)
@@ -87,6 +100,21 @@ class Profile:
     def places(self) -> Iterator[Place]:
         for place in self.places_db.places:
             yield Place.from_orm(place)
+
+    @property
+    def user_prefs(self):
+        with open(self.path / 'prefs.js') as p:
+            for line in p:
+                line = line.strip()
+                if line and line[0:2] != '//':
+                    self.ctx.run(lambda: eval(line.rstrip(';')))
+        # return {k.name: v for k, v in self.ctx.items()}
+        return dict(sorted((k.name, v) for k, v in self.ctx.items()))
+
+    @property
+    def xulstore(self):
+        with open(self.path / 'xulstore.json') as f:
+            return json.loads(f.read())
 
 
 class Pyrefox:

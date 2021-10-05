@@ -35,10 +35,14 @@ class FileUri(ConstrainedStr):
 
 
 class ResourceUri(AnyUrl):
+    __slots__ = ()
+
     allowed_schemes = {'resource'}
 
 
 class MozExtensionUri(AnyUrl):
+    __slots__ = ()
+
     allowed_schemes = {'moz-extension'}
 
 

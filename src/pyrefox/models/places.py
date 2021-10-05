@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional, Union, Any
 from ..types import LooseModel, Model, AnyUrl, datetime
 from .enums import BookmarkType, OriginSchemes, SpecialGuid, SyncStatus
 
@@ -63,3 +63,8 @@ class Bookmark(Model):
     guid:                Union[SpecialGuid, str]  # TODO: len == 12
     sync_status:         SyncStatus
     sync_change_counter: int
+    place:               Optional[Place]
+
+    @property
+    def is_folder(self) -> bool:
+        return self.type == BookmarkType.FOLDER
