@@ -2,29 +2,14 @@ from typing import Union
 from http.cookies import SimpleCookie
 
 from ..types import (
-    DynamicModel, Model, Object,
-    AboutUri, FileUri, HttpUrl, ResourceUri, MozExtensionUri, ViewSourceAnyUrl,
+    Model, AboutUri, FileUri, HttpUrl,
+    ResourceUri, MozExtensionUri, ViewSourceAnyUrl,
     datetime, date,
 )
-from ..utils import _camel
 from .enums import EventType, PermissionType, SameSite
 from .extensions import AddOnsStartUp, Extensions
 from .places import Bookmark, Place
-
-
-class SearchEngine(DynamicModel):
-    name:            str
-    is_app_provided: bool
-    meta_data:       Object
-
-    class Config:
-        alias_generator = _camel
-
-
-class SearchEngines(Model):
-    version:   int
-    engines:   list[SearchEngine]
-    meta_data: Object  # TODO
+from .search import SearchEngines
 
 
 class Event(Model):
@@ -36,7 +21,7 @@ class Event(Model):
 
 class Permission(Model):
     id:                int
-    origin:            Union[HttpUrl, AboutUri, FileUri, ResourceUri, MozExtensionUri, ViewSourceAnyUrl]
+    origin:            Union[HttpUrl, AboutUri, FileUri, ResourceUri, MozExtensionUri, ViewSourceAnyUrl]  # noqa: E501
     type:              PermissionType
     permission:        bool
     expire_type:       int
@@ -80,4 +65,5 @@ __all__ = [
     'Event',
     'Extensions',
     'Place',
+    'SearchEngines',
 ]
