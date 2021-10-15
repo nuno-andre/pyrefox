@@ -126,18 +126,26 @@ class Pyrefox:
         self._profiles = None
 
     @property
-    def basedir(self) -> PathLike:
+    def basedirs(self) -> Iterator[PathLike]:
         if self.is_win:
-            return Path(getenv('APPDATA')) / 'Mozilla/Firefox'
+            return map(Path(getenv('APPDATA')).joinpath,
+                       ('Mozilla/Firefox', 'LibreWolf'))
         else:
-            return Path.home() / '.mozilla/firefox'
+            return map(Path.home().joinpath,
+                       ('.mozilla/firefox', '.librewolf'))
 
     @property
     def profiles(self) -> list[Profile]:
         if self._profiles is None:
-            pdir = self.basedir / 'Profiles' if self.is_win else self.basedir
+            if self.is_win:
+                pdirs = (d / 'Profiles' for d in self.basedirs)
+            else:
+                pdirs = self.basedirs
+
             self._profiles = sorted(
-                (Profile(d) for d in pdir.glob('*default*') if d.is_dir()),
+                (Profile(d) for p in pdirs
+                    for d in p.glob('*default*') if d.is_dir()),
                 key=lambda x: x.modified,
-                reverse=True)
+                reverse=True,
+            )
         return self._profiles
